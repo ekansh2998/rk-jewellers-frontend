@@ -216,3 +216,45 @@ body{
     left:0 !important;
   }
 }
+
+/* TRUE FIX: header/bottom fixed, only center content scrolls */
+.phone {
+  filter: none !important;
+  transform: none !important;
+  perspective: none !important;
+  contain: none !important;
+  height: 100svh !important;
+  overflow-y: auto !important;
+  padding-top: 88px !important;
+  padding-bottom: 132px !important;
+}
+
+.header {
+  position: fixed !important;
+  top: 0 !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: 100% !important;
+  max-width: 430px !important;
+  z-index: 99999 !important;
+}
+
+.bottomNav {
+  position: fixed !important;
+  bottom: 32px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: 100% !important;
+  max-width: 430px !important;
+  z-index: 99999 !important;
+}
+
+.bottomMarquee {
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: 100% !important;
+  max-width: 430px !important;
+  z-index: 100000 !important;
+}
