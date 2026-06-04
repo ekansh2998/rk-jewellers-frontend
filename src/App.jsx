@@ -40,82 +40,8 @@ export default function App(){
   async function fetchRates(){ try{ const savedJwt = adminJwt || (()=>{ try{return localStorage.getItem("rk_admin_jwt")||"";}catch{return "";} })(); const headers = savedJwt ? {Authorization:`Bearer ${savedJwt}`} : {}; const r=await fetch(`${API_BASE}/api/rates`,{cache:"no-store",headers}); if(!r.ok) throw new Error(r.status); const d=await r.json(); applyRateData(d); setServerStatus("Online"); }catch(e){ console.error(e); setServerStatus("Offline"); }}
   useEffect(()=>{ document.title="R K JEWELLERS"; try{ const cached=JSON.parse(localStorage.getItem("rk_last_rates")||"null"); if(cached) applyRateData(cached); }catch{} const t=setTimeout(()=>setShowSplash(false),700); const timer=setInterval(()=>setNow(Date.now()),1000); return()=>{clearTimeout(t); clearInterval(timer);};},[]);
   useEffect(()=>{ if(firstRatesLoaded) setShowSplash(false); },[firstRatesLoaded]);
-  useEffect(()=>{ fetchRates(); const interval=setInterval(fetchRates,2500); const socket=new WebSocket("wss://rk-jewellers-backend.onrender.com/live"); socket.onopen=()=>setServerStatus("Online"); socket.onerror=()=>setServerStatus("Offline"); socket.onmessage=(ev)=>{ try{ const msg=JSON.parse(ev.data); if(msg.type==="rates"){ applyRateData(msg.data); setServerStatus("Online"); }}catch(e){console.error(e);} }; return()=>{ clearInterval(interval); socket.close(); };},[]);
-  useEffect(() => {
-    const hp = CapacitorApp.addListener("backButton", () => {
-      if (modal) {
-        closeModal();
-        return;
-      }
-
-      if (page === "atu" && atuMode === "accessPassword") {
-        showMsg("Are you sure you don’t want to access the ATU page?", () => {
-          setAtuMode("locked");
-          setAtuPassword("");
-        });
-        return;
-      }
-
-      if (page === "atu" && atuMode === "enableUpdatePassword") {
-        showMsg("Are you sure you don’t want to update access token?", () => {
-          setAtuMode("main");
-          setAtuPassword("");
-          setAtuEditable(false);
-        });
-        return;
-      }
-
-      if (page === "atu" && atuMode === "confirmUpdatePassword") {
-        showMsg("Are you sure you don’t want to update?", () => resetAtuMainSecure());
-        return;
-      }
-
-      if (page === "atu" && atuMode === "reconnectPassword") {
-        showMsg("Are you sure you don’t want to reconnect to Upstox?", () => {
-          setAtuMode("main");
-          setAtuPassword("");
-        });
-        return;
-      }
-
-      if (page === "atu" && atuMode === "viewTokenPassword") {
-        showMsg("Are you sure you don’t want to view token?", () => {
-          setAtuMode("main");
-          setAtuPassword("");
-          setAtuEditable(false);
-        });
-        return;
-      }
-
-      if (page === "atu" && atuMode === "viewTokenPage") {
-        setAtuMode("main");
-        setCurrentToken("");
-        setCurrentTokenUpdatedAt(null);
-        setCurrentTokenGeneratedBy(null);
-        return;
-      }
-
-      if (page !== "live") {
-        setPage("live");
-        setMenuOpen(false);
-        return;
-      }
-
-      if (showExitConfirm) return;
-
-      if (backArmed) {
-        setShowExitConfirm(true);
-        setBackArmed(false);
-      } else {
-        setBackArmed(true);
-        setTimeout(() => setBackArmed(false), 1800);
-      }
-    });
-
-    return () => {
-      hp.then((h) => h.remove());
-    };
-  }, [backArmed, showExitConfirm, page, atuMode, modal]);
+  useEffect(()=>{ fetchRates(); const interval=setInterval(fetchRates,750); const socket=new WebSocket("wss://rk-jewellers-backend.onrender.com/live"); socket.onopen=()=>setServerStatus("Online"); socket.onerror=()=>setServerStatus("Offline"); socket.onmessage=(ev)=>{ try{ const msg=JSON.parse(ev.data); if(msg.type==="rates"){ applyRateData(msg.data); setServerStatus("Online"); }}catch(e){console.error(e);} }; return()=>{ clearInterval(interval); socket.close(); };},[]);
+  useEffect(()=>{ const hp=CapacitorApp.addListener("backButton",()=>{ if(modal){ closeModal(); return; } if(page==="atu" && atuMode==="accessPassword"){ showMsg("Are you sure you don’t want to access the ATU page?",()=>{setAtuMode("locked"); setAtuPassword("");}); return; } if(page==="atu" && atuMode==="enableUpdatePassword"){ showMsg("Are you sure you don’t want to update access token?",()=>{setAtuMode("main"); setAtuPassword(""); setAtuEditable(false);}); return; } if(page==="atu" && atuMode==="confirmUpdatePassword"){ showMsg("Are you sure you don’t want to update?",()=>resetAtuMainSecure()); return; } if(page==="atu" && atuMode==="reconnectPassword"){ showMsg("Are you sure you don’t want to reconnect to Upstox?",()=>{setAtuMode("main"); setAtuPassword("");}); return; } if(page==="atu" && atuMode==="viewTokenPassword"){ showMsg("Are you sure you don’t want to view token?",()=>{setAtuMode("main"); setAtuPassword(""); setAtuEditable(false);}); return; } if(page==="atu" && atuMode==="viewTokenPage"){ setAtuMode("main"); setCurrentToken(""); setCurrentTokenUpdatedAt(null); setCurrentTokenGeneratedBy(null); return; } if(showExitConfirm){ return; } if(backArmed){ setShowExitConfirm(true); setBackArmed(false); } else { setBackArmed(true); setTimeout(()=>setBackArmed(false),1800); }}); return()=>{hp.then(h=>h.remove());}; },[backArmed,showExitConfirm,page,atuMode,modal]);
 
   const rawMarket = useMemo(()=>({ goldMcx: toNum(market.goldMcx), silverMcx: toNum(market.silverMcx), goldHigh: toNum(market.goldHigh), goldLow: toNum(market.goldLow), goldOpen: toNum(market.goldOpen), goldPrevClose: toNum(market.goldPrevClose), silverPrevClose: toNum(market.silverPrevClose), goldThirdLastClose: toNum(market.goldThirdLastClose), silverThirdLastClose: toNum(market.silverThirdLastClose), goldComparisonClose: toNum(market.goldComparisonClose), silverComparisonClose: toNum(market.silverComparisonClose), marketClosed: market.marketClosed, marketClosedMessage: market.marketClosedMessage, marketClosedReferenceMode: market.marketClosedReferenceMode, silverHigh: toNum(market.silverHigh), silverLow: toNum(market.silverLow), silverOpen: toNum(market.silverOpen), showingLastRecordedData: market.showingLastRecordedData, lastRecordedWarning: market.lastRecordedWarning, lastRecordedRatesUpdatedAt: market.lastRecordedRatesUpdatedAt }),[market]);
   const rates=useMemo(()=>({ ...calcGoldRates(rawMarket.goldMcx, goldDifference), ...calcSilverRates(rawMarket.silverMcx, silverDifference) }),[rawMarket,goldDifference,silverDifference]);
@@ -125,10 +51,10 @@ export default function App(){
   function openPage(p){ setPage(p); setMenuOpen(false); if(p!=="mdr"){ setMdrUnlocked(false); setPassword(""); setShowPasswordBox(false); } if(p!=="atu"){ resetAtuState(); }}
   function resetAtuState(){ setAtuUnlocked(false); setAtuMode("locked"); setAtuPassword(""); setAtuToken(""); setAtuEditable(false); setCurrentToken(""); setCurrentTokenUpdatedAt(null); setAdminJwt(""); try{ localStorage.removeItem("rk_admin_jwt"); }catch{} setMarket(m=>({...m, adminSession:false, authVerified:false})); }
   function resetAtuMainSecure(){ setAtuMode("main"); setAtuPassword(""); setAtuToken(""); setAtuEditable(false); setCurrentToken(""); setCurrentTokenUpdatedAt(null); }
-  function unlockMdr(){ if(password===MDR_PASSWORD){ setMdrUnlocked(true); setShowPasswordBox(false); setPassword(""); setGoldPlus(""); setGoldMinus(""); setGoldPhysical(""); setSilverPlus(""); setSilverMinus(""); setSilverPhysical(""); } else { showMsg("Wrong Password"); setPassword(""); setShowPasswordBox(false); }}
+  async function unlockMdr(){ try{ const jwt=await adminLogin(password,"mdr-settings"); setAdminJwt(jwt); setMdrUnlocked(true); setShowPasswordBox(false); setPassword(""); setGoldPlus(""); setGoldMinus(""); setGoldPhysical(""); setSilverPlus(""); setSilverMinus(""); setSilverPhysical(""); } catch(e){ showMsg("Wrong Password"); setPassword(""); setShowPasswordBox(false); }}
   const changeBox=(setter,locked=false)=>(v)=>{ if(/^\d*$/.test(v) && !locked) setter(v); };
   const physicalBox=(setter,locked=false)=>(v)=>{ if(/^\d*(\.\d*)?$/.test(v) && !locked) setter(v); };
-  async function updateMdrAndLock(){ const gBlank=goldPlus===""&&goldMinus===""&&goldPhysical===""; const sBlank=silverPlus===""&&silverMinus===""&&silverPhysical===""; const body={}; if(!gBlank){ if(goldPhysical!=="") body.goldPhysicalRate=Number(goldPhysical); else body.goldDifference = goldPlus!=="" ? Number(goldPlus) : -Number(goldMinus); } if(!sBlank){ if(silverPhysical!=="") body.silverPhysicalRate=Number(silverPhysical); else body.silverDifference = silverPlus!=="" ? Number(silverPlus) : -Number(silverMinus); } if(Object.keys(body).length===0){ setMdrUnlocked(false); setPassword(""); setShowPasswordBox(false); openPage("live"); return; } try{ const jwt=await adminLogin(MDR_PASSWORD,"settings-update"); const r=await fetch(`${API_BASE}/api/rate-difference`,{method:"POST",headers:{"Content-Type":"application/json",Authorization:`Bearer ${jwt}`},body:JSON.stringify(body)}); if(!r.ok) throw new Error(r.status); await fetchRates(); setMdrUnlocked(false); setPassword(""); setShowPasswordBox(false); showMsg("Metal rate difference updated online for all devices"); }catch(e){ showMsg("Failed to update MDR. Please check backend server."); console.error(e); }}
+  async function updateMdrAndLock(){ const gBlank=goldPlus===""&&goldMinus===""&&goldPhysical===""; const sBlank=silverPlus===""&&silverMinus===""&&silverPhysical===""; const body={}; if(!gBlank){ if(goldPhysical!=="") body.goldPhysicalRate=Number(goldPhysical); else body.goldDifference = goldPlus!=="" ? Number(goldPlus) : -Number(goldMinus); } if(!sBlank){ if(silverPhysical!=="") body.silverPhysicalRate=Number(silverPhysical); else body.silverDifference = silverPlus!=="" ? Number(silverPlus) : -Number(silverMinus); } if(Object.keys(body).length===0){ setMdrUnlocked(false); setPassword(""); setShowPasswordBox(false); openPage("live"); return; } try{ const jwt=adminJwt || localStorage.getItem("rk_admin_jwt") || ""; if(!jwt) throw new Error("Admin session missing"); const r=await fetch(`${API_BASE}/api/rate-difference`,{method:"POST",headers:{"Content-Type":"application/json",Authorization:`Bearer ${jwt}`},body:JSON.stringify(body)}); if(!r.ok) throw new Error(r.status); await fetchRates(); setMdrUnlocked(false); setPassword(""); setShowPasswordBox(false); showMsg("Metal rate difference updated online for all devices"); }catch(e){ showMsg("Failed to update MDR. Please unlock MDR again and check backend server."); console.error(e); }}
 
   async function adminLogin(passwordValue, purpose="admin"){
     const r=await fetch(`${API_BASE}/api/admin/login`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({password:passwordValue,purpose})});
@@ -140,12 +66,12 @@ export default function App(){
     return d.token;
   }
 
-  async function atuAccessOk(){ try{ if(atuPassword!==ATU_ACCESS_PASSWORD) throw new Error("Wrong Password"); await adminLogin(atuPassword,"atu-access"); setAtuUnlocked(true); setAtuMode("main"); setAtuPassword(""); setAtuToken(""); setAtuEditable(false); } catch(e){ setAtuPassword(""); showMsg("Wrong Password"); }}
-  function atuEnableUpdate(){ if(atuPassword===ATU_UPDATE_PASSWORD){ setAtuMode("main"); setAtuPassword(""); setAtuEditable(true); setAtuToken(""); } else { setAtuPassword(""); showMsg("Wrong Password"); }}
+  async function atuAccessOk(){ try{ await adminLogin(atuPassword,"atu-access"); setAtuUnlocked(true); setAtuMode("main"); setAtuPassword(""); setAtuToken(""); setAtuEditable(false); } catch(e){ setAtuPassword(""); showMsg("Wrong Password"); }}
+  async function atuEnableUpdate(){ try{ await adminLogin(atuPassword,"token-update"); setAtuMode("main"); setAtuPassword(""); setAtuEditable(true); setAtuToken(""); } catch(e){ setAtuPassword(""); showMsg("Wrong Password"); }}
   function atuStartUpdate(){ if(!atuToken.trim()){ resetAtuMainSecure(); return; } setAtuMode("confirmUpdatePassword"); setAtuPassword(""); }
-  async function atuConfirmUpdate(){ try{ if(atuPassword!==ATU_UPDATE_PASSWORD) throw new Error("Wrong Password"); const jwt=await adminLogin(atuPassword,"token-update"); const r=await fetch(`${API_BASE}/api/upstox/manual-token`,{method:"POST",headers:{"Content-Type":"application/json",Authorization:`Bearer ${jwt}`},body:JSON.stringify({accessToken:atuToken.trim()})}); if(!r.ok) throw new Error(await r.text()); await fetchRates(); resetAtuMainSecure(); showMsg("Access token updated successfully"); }catch(e){ console.error(e); const msg=String(e.message||"").includes("Wrong")?"Wrong Password":"Access token update failed. Check server and MongoDB settings."; setAtuPassword(""); resetAtuMainSecure(); showMsg(msg); }}
-  async function atuReconnectPasswordOk(){ try{ if(atuPassword!==ATU_UPDATE_PASSWORD) throw new Error("Wrong Password"); const jwt=await adminLogin(atuPassword,"upstox-reconnect"); const r=await fetch(`${API_BASE}/api/admin/upstox-login-url`,{method:"POST",headers:{Authorization:`Bearer ${jwt}`}}); const d=await r.json().catch(()=>({})); if(!r.ok || !d.loginUrl) throw new Error(d.message||"Reconnect failed"); setAtuPassword(""); setAtuMode("main"); setAtuEditable(false); setAtuToken(""); window.open(d.loginUrl, "_blank"); }catch(e){ setAtuPassword(""); showMsg(String(e.message||"").includes("Wrong")?"Wrong Password":"Reconnect to Upstox failed. Check server settings."); }}
-  async function atuViewTokenPasswordOk(){ try{ if(atuPassword!==ATU_UPDATE_PASSWORD) throw new Error("Wrong Password"); const jwt=await adminLogin(atuPassword,"token-view"); setAtuPassword(""); const r=await fetch(`${API_BASE}/api/upstox/current-token`,{cache:"no-store",headers:{Authorization:`Bearer ${jwt}`}}); const d=await r.json().catch(()=>({})); if(!r.ok) throw new Error(d.message||"Unable to load current token"); setCurrentToken(d.accessToken||""); setCurrentTokenUpdatedAt(d.updatedAt||d.accessTokenUpdatedAt||d.accessTokenExpiresAt||null); setCurrentTokenGeneratedBy(d.generatedBy||d.tokenGeneratedBy||d.source||null); setAtuMode("viewTokenPage"); setAtuEditable(false); setAtuToken(""); }catch(e){ console.error(e); setAtuPassword(""); setAtuMode("main"); showMsg(String(e.message||"").includes("Wrong")?"Wrong Password":"Current token could not be loaded. Please check backend and token storage."); }}
+  async function atuConfirmUpdate(){ try{ const jwt=await adminLogin(atuPassword,"token-update"); const r=await fetch(`${API_BASE}/api/upstox/manual-token`,{method:"POST",headers:{"Content-Type":"application/json",Authorization:`Bearer ${jwt}`},body:JSON.stringify({accessToken:atuToken.trim()})}); if(!r.ok) throw new Error(await r.text()); await fetchRates(); resetAtuMainSecure(); showMsg("Access token updated successfully"); }catch(e){ console.error(e); const msg=String(e.message||"").includes("Wrong")?"Wrong Password":"Access token update failed. Check server and MongoDB settings."; setAtuPassword(""); resetAtuMainSecure(); showMsg(msg); }}
+  async function atuReconnectPasswordOk(){ try{ const jwt=await adminLogin(atuPassword,"upstox-reconnect"); const r=await fetch(`${API_BASE}/api/admin/upstox-login-url`,{method:"POST",headers:{Authorization:`Bearer ${jwt}`}}); const d=await r.json().catch(()=>({})); if(!r.ok || !d.loginUrl) throw new Error(d.message||"Reconnect failed"); setAtuPassword(""); setAtuMode("main"); setAtuEditable(false); setAtuToken(""); window.open(d.loginUrl, "_blank"); }catch(e){ setAtuPassword(""); showMsg(String(e.message||"").includes("Wrong")?"Wrong Password":"Reconnect to Upstox failed. Check server settings."); }}
+  async function atuViewTokenPasswordOk(){ try{ const jwt=await adminLogin(atuPassword,"token-view"); setAtuPassword(""); const r=await fetch(`${API_BASE}/api/upstox/current-token`,{cache:"no-store",headers:{Authorization:`Bearer ${jwt}`}}); const d=await r.json().catch(()=>({})); if(!r.ok) throw new Error(d.message||"Unable to load current token"); setCurrentToken(d.accessToken||""); setCurrentTokenUpdatedAt(d.updatedAt||d.accessTokenUpdatedAt||d.accessTokenExpiresAt||null); setCurrentTokenGeneratedBy(d.generatedBy||d.tokenGeneratedBy||d.source||null); setAtuMode("viewTokenPage"); setAtuEditable(false); setAtuToken(""); }catch(e){ console.error(e); setAtuPassword(""); setAtuMode("main"); showMsg(String(e.message||"").includes("Wrong")?"Wrong Password":"Current token could not be loaded. Please check backend and token storage."); }}
   async function copyCurrentTokenAndClose(){ try{ if(currentToken && navigator?.clipboard?.writeText){ await navigator.clipboard.writeText(currentToken); } }catch(e){ console.error(e); } setCurrentToken(""); setCurrentTokenUpdatedAt(null); setCurrentTokenGeneratedBy(null); setAtuMode("main"); showMsg("Current token copied successfully"); }
 
   if(showSplash) return <div className="splashScreen"><div className="splashGlow"/><h1>R K JEWELLERS</h1></div>;
