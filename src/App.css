@@ -53,118 +53,118 @@ body{position:fixed;inset:0;width:100%}
 @media(max-width:430px){.header,.bottomNav,.bottomMarquee{max-width:100vw!important}.phone{max-width:100vw!important}.sideMenu{left:0!important}}
 @media(max-width:520px){.differenceSummary{grid-template-columns:1fr}}
 
-
 /* ============================================================
-   FINAL SCROLL-WITH-PAGE FIX
-   Header, burger menu, popup, bottom message bar and menu bar
-   now move with app page scroll instead of staying fixed.
+   REAL FINAL FIXED-SCREEN BAR FIX
+   User requirement:
+   - Header + burger must always stay visible at top of mobile screen.
+   - Bottom menu + bottom message bar must always stay visible at bottom.
+   - They should NOT scroll away with page content.
+   This block is intentionally last so it overrides old scroll-with-page rules.
    ============================================================ */
 html,
 body,
 #root{
-  height:auto !important;
+  width:100% !important;
+  height:100% !important;
   min-height:100% !important;
-  overflow-x:hidden !important;
-  overflow-y:auto !important;
-  position:static !important;
-  overscroll-behavior:auto !important;
+  margin:0 !important;
+  overflow:hidden !important;
+  position:fixed !important;
+  inset:0 !important;
+  overscroll-behavior:none !important;
 }
 
 body{
-  position:static !important;
-  inset:auto !important;
-  width:100% !important;
-  overflow-y:auto !important;
-  touch-action:auto !important;
+  background:#000 !important;
+  font-family:Arial,Helvetica,sans-serif !important;
+  color:#fff !important;
 }
 
 .phone{
-  position:relative !important;
   width:100% !important;
   max-width:430px !important;
-  min-height:100vh !important;
-  height:auto !important;
-  overflow:visible !important;
-  overflow-x:hidden !important;
-  padding-top:12px !important;
-  padding-bottom:12px !important;
+  height:100svh !important;
+  min-height:100svh !important;
   margin:0 auto !important;
-  display:flex !important;
-  flex-direction:column !important;
+  position:relative !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  -webkit-overflow-scrolling:touch !important;
+  padding-top:88px !important;
+  padding-bottom:132px !important;
+  display:block !important;
 }
 
 .header{
-  position:relative !important;
-  top:auto !important;
-  left:auto !important;
+  position:fixed !important;
+  top:0 !important;
+  left:50% !important;
   right:auto !important;
   bottom:auto !important;
-  inset:auto !important;
-  transform:none !important;
+  inset:auto auto auto 50% !important;
+  transform:translateX(-50%) !important;
   width:100% !important;
-  max-width:100% !important;
-  z-index:10 !important;
-  margin:0 0 12px 0 !important;
-  flex:0 0 auto !important;
+  max-width:430px !important;
+  z-index:50000 !important;
+  margin:0 !important;
 }
 
 .iconButton{
   position:relative !important;
-  z-index:12 !important;
+  z-index:50002 !important;
 }
 
 .bottomNav{
-  position:relative !important;
-  top:auto !important;
-  left:auto !important;
+  position:fixed !important;
+  left:50% !important;
   right:auto !important;
-  bottom:auto !important;
-  inset:auto !important;
-  transform:none !important;
+  top:auto !important;
+  bottom:32px !important;
+  inset:auto auto 32px 50% !important;
+  transform:translateX(-50%) !important;
   width:100% !important;
-  max-width:100% !important;
+  max-width:430px !important;
   height:54px !important;
-  z-index:10 !important;
-  margin:18px 0 0 0 !important;
-  flex:0 0 auto !important;
+  z-index:50000 !important;
+  margin:0 !important;
 }
 
 .bottomMarquee{
-  position:relative !important;
-  top:auto !important;
-  left:auto !important;
+  position:fixed !important;
+  left:50% !important;
   right:auto !important;
-  bottom:auto !important;
-  inset:auto !important;
-  transform:none !important;
+  top:auto !important;
+  bottom:0 !important;
+  inset:auto auto 0 50% !important;
+  transform:translateX(-50%) !important;
   width:100% !important;
-  max-width:100% !important;
-  z-index:10 !important;
+  max-width:430px !important;
+  height:32px !important;
+  z-index:50001 !important;
   margin:0 !important;
-  flex:0 0 auto !important;
 }
 
 .overlay{
-  position:absolute !important;
+  position:fixed !important;
   inset:0 !important;
-  width:100% !important;
-  min-height:100% !important;
-  height:100% !important;
-  z-index:45 !important;
+  width:100vw !important;
+  height:100svh !important;
   background:rgba(0,0,0,.42) !important;
+  z-index:55000 !important;
 }
 
 .sideMenu{
-  position:absolute !important;
+  position:fixed !important;
   top:0 !important;
-  left:0 !important;
+  left:calc(50% - min(50vw,215px)) !important;
   right:auto !important;
   bottom:auto !important;
   width:min(78vw,290px) !important;
-  height:auto !important;
-  min-height:100% !important;
-  z-index:50 !important;
+  height:100svh !important;
+  min-height:100svh !important;
+  z-index:60000 !important;
   transform:translateX(-115%) !important;
+  margin:0 !important;
 }
 
 .sideMenu.open{
@@ -172,47 +172,45 @@ body{
 }
 
 .exitOverlay{
-  position:absolute !important;
+  position:fixed !important;
   inset:0 !important;
-  min-height:100% !important;
-  height:auto !important;
-  z-index:70 !important;
+  width:100vw !important;
+  height:100svh !important;
+  min-height:100svh !important;
+  z-index:90000 !important;
   display:flex !important;
-  align-items:flex-start !important;
+  align-items:center !important;
   justify-content:center !important;
-  padding:120px 18px 18px !important;
+  padding:18px !important;
   background:rgba(0,0,0,.68) !important;
 }
 
 .exitBox{
   position:relative !important;
-  margin:0 auto !important;
+  margin:auto !important;
   max-width:min(360px,92vw) !important;
 }
 
 .backHint,
 .fixedLastRecordedWarning{
-  position:relative !important;
-  top:auto !important;
-  left:auto !important;
+  position:fixed !important;
+  left:50% !important;
   right:auto !important;
-  bottom:auto !important;
-  inset:auto !important;
-  transform:none !important;
-  width:min(92%,390px) !important;
-  max-width:92% !important;
-  z-index:10 !important;
-  margin:12px auto !important;
+  top:auto !important;
+  bottom:92px !important;
+  transform:translateX(-50%) !important;
+  width:min(92vw,390px) !important;
+  max-width:92vw !important;
+  z-index:50002 !important;
+  margin:0 !important;
 }
 
 @media(max-width:430px){
-  .phone{
-    max-width:100vw !important;
-  }
+  .phone,
   .header,
   .bottomNav,
   .bottomMarquee{
-    max-width:100% !important;
+    max-width:100vw !important;
   }
   .sideMenu{
     left:0 !important;
