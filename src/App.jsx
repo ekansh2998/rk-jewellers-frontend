@@ -3,9 +3,6 @@ import { App as CapacitorApp } from "@capacitor/app";
 import "./App.css";
 
 const API_BASE = "https://rk-jewellers-backend.onrender.com";
-const MDR_PASSWORD = "Widber";
-const ATU_ACCESS_PASSWORD = "Ekansh2998";
-const ATU_UPDATE_PASSWORD = "Widber";
 const toNum = (v) => (Number.isFinite(Number(v)) ? Number(v) : 0);
 const formatINR = (value) => "₹ " + toNum(value).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 function formatDateTime(value) { if(!value) return "Not available"; const d = new Date(value); if(Number.isNaN(d.getTime())) return "Not available"; return `${d.toLocaleDateString("en-IN", { weekday:"long", day:"2-digit", month:"short", year:"numeric" })} || ${d.toLocaleTimeString("en-IN")}`; }
